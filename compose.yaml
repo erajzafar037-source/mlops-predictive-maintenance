@@ -1,0 +1,22 @@
+services:
+  train:
+    build: .
+    command: ["python", "-m", "pdm.train", "--data", "data/ai4i2020.csv", "--output", "artifacts"]
+    volumes:
+      - ./data:/app/data
+      - ./artifacts:/app/artifacts
+  api:
+    build: .
+    command: ["uvicorn", "pdm.api:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      MODEL_PATH: /app/artifacts/model.joblib
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/live')"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
