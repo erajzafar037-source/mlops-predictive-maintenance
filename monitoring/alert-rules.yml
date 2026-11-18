@@ -1,0 +1,11 @@
+groups:
+  - name: predictive-maintenance-api
+    rules:
+      - alert: PredictiveMaintenanceInferenceP95High
+        expr: histogram_quantile(0.95, sum(rate(pdm_inference_duration_seconds_bucket[5m])) by (le)) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Predictive-maintenance inference p95 is above 2 seconds
+          description: Investigate API resource pressure, model loading and request volume. This is an example threshold; calibrate it using measured service behaviour.
