@@ -41,6 +41,7 @@ def test_prepare_features_rejects_non_binary_target():
 
 def test_prepare_features_rejects_fractional_target_instead_of_truncating():
     frame = sample_frame()
+    frame["Machine failure"] = frame["Machine failure"].astype(float)
     frame.loc[0, "Machine failure"] = 0.5
     with pytest.raises(ValueError, match="binary"):
         prepare_features(frame)
